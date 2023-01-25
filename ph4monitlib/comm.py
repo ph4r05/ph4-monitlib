@@ -10,7 +10,7 @@ import socketserver
 import threading
 import time
 
-from ph4monitlib.lib import try_fnc
+from ph4monitlib import try_fnc
 
 logger = logging.getLogger(__name__)
 

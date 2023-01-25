@@ -53,6 +53,13 @@ class AsyncWorker:
 
         self.task_queue.put_nowait(task)
 
+    def enqueue_on_main(self, task, loop=None):
+        """Enqueues coroutine function for execution using given loop for enqueueing (should be mainloop)"""
+        async def _enqueue(x):
+            self.enqueue(x)
+
+        asyncio.run_coroutine_threadsafe(_enqueue(task), loop or asyncio.get_event_loop())
+
     def stop(self):
         self.task_queue.put_nowait(None)  # unblocks waiting
         self.is_running = False
@@ -98,5 +105,6 @@ class Worker:
         self.worker_queue.put(task)
 
     def stop(self):
+        self.enqueue(None)
         self.is_running = False
 

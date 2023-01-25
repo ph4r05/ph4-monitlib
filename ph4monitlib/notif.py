@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import List
 
-from ph4monitlib.lib import try_fnc
+from ph4monitlib import try_fnc
 
 logger = logging.getLogger(__name__)
 
