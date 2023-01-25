@@ -9,6 +9,8 @@ from telegram import Update, User
 from telegram.error import TelegramError
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
+from ph4monitlib import defvalkey
+
 logger = logging.getLogger(__name__)
 
 
@@ -199,10 +201,36 @@ class TelegramBot:
     async def reply_msg(self, text, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    async def send_telegram_notif(self, notif):
+    async def send_telegram_notif(self, notif, edit_last=None):
+        msgs = {}
+        edit_last = edit_last or {}
+
         for chat_id in self.registered_chat_ids_set:
-            logger.info(f'Sending telegram notif {notif}, chat id: {chat_id}')
-            await self.bot_app.bot.send_message(chat_id, notif)
+            last_msg = defvalkey(edit_last, chat_id)
+            logger.info(f'Sending telegram notif {notif}, chat id: {chat_id}, have last: {last_msg is not None}')
+
+            msg = None
+            if last_msg:
+                try:
+                    await self.edit_message(chat_id, last_msg.message_id, notif)
+                    msg = last_msg
+                except Exception as e:
+                    logger.info(f'Could not edit message {last_msg} for {chat_id}: {e}', exc_info=e)
+
+            if msg is None:
+                msg = await self.send_message(chat_id, notif)
+
+            msgs[chat_id] = msg
+        return msgs
+
+    async def send_message(self, chat_id, text, **kwargs):
+        return await self.bot_app.bot.send_message(chat_id, text, **kwargs)
+
+    async def edit_message(self, chat_id, message_id, text, **kwargs):
+        return await self.bot_app.bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, **kwargs)
+
+    def get_chat_ids(self):
+        return self.registered_chat_ids_set
 
     def handler_helper(self, mtype, update: Update, context: ContextTypes.DEFAULT_TYPE) -> "CmdHelper":
         return CmdHelper(mtype, update, context, self)
