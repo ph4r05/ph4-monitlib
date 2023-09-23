@@ -19,6 +19,7 @@ class TelegramBot:
         self,
         api_key=None,
         /,
+        disabled=False,
         timeout=None,
         polling_args=None,
         connect_timeout=None,
@@ -28,6 +29,7 @@ class TelegramBot:
     ):
         self.bot_app = None
         self.bot_thread = None
+        self.disabled = disabled
         self.timeout = timeout
         self.polling_args = polling_args
         self.connect_timeout = connect_timeout
@@ -138,6 +140,9 @@ class TelegramBot:
         if not self.bot_apikey:
             logger.warning("Telegram bot API key not configured")
             return
+        if self.disabled:
+            logger.info("Telegram bot disabled")
+            return
 
         def error_callback(exc: TelegramError) -> None:
             logger.info(f"Error callback {exc}")
@@ -162,6 +167,9 @@ class TelegramBot:
             raise
 
     async def stop_bot_async(self):
+        if self.disabled:
+            logger.info("Telegram bot disabled")
+            return
         if not self.bot_app:
             return
 
@@ -247,6 +255,9 @@ class TelegramBot:
         await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     async def send_telegram_notif(self, notif, edit_last=None):
+        if self.disabled:
+            return None
+
         msgs = {}
         edit_last = edit_last or {}
 
@@ -269,9 +280,15 @@ class TelegramBot:
         return msgs
 
     async def send_message(self, chat_id, text, **kwargs):
+        if self.disabled:
+            return None
+
         return await self.bot_app.bot.send_message(chat_id, text, **kwargs)
 
     async def edit_message(self, chat_id, message_id, text, **kwargs):
+        if self.disabled:
+            return None
+
         return await self.bot_app.bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, **kwargs)
 
     def get_chat_ids(self):
