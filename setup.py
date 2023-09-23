@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-version = "0.0.4"
+version = "0.0.5"
 
 # Please update tox.ini when modifying dependency version requirements
 install_requires = [
