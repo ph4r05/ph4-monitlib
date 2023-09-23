@@ -8,20 +8,20 @@ def silent_close(c):
     try:
         if c is not None:
             c.close()
-    except:
+    except Exception:
         pass
 
 
 def is_port_listening(port, tcp=True):
     """Returns a connection if the given port is listening, None otherwise"""
-    conns = psutil.net_connections('tcp' if tcp else 'udp')
+    conns = psutil.net_connections("tcp" if tcp else "udp")
     for con in conns:
-        if con.laddr[1] == port and (not tcp or (con.status is not None and con.status.upper() == 'LISTEN')):
+        if con.laddr[1] == port and (not tcp or (con.status is not None and con.status.upper() == "LISTEN")):
             return con
     return None
 
 
-def test_port_open(host='127.0.0.1', port=80, timeout=15, attempts=3, tcp=True, read_header=False, write_payload=None):
+def test_port_open(host="127.0.0.1", port=80, timeout=15, attempts=3, tcp=True, read_header=False, write_payload=None):
     idx = 0
     while idx < attempts:
         sock = None
@@ -47,7 +47,7 @@ def test_port_open(host='127.0.0.1', port=80, timeout=15, attempts=3, tcp=True, 
 
             return True, idx, read_data
 
-        except:
+        except Exception:
             time.sleep(0.1)
             pass
 

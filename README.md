@@ -8,3 +8,23 @@ Library contains several utility classes that help with building monitoring scri
 - *TcpComm*, for client-server communication via TCP, use JWT protection (not included)
 - *NotifyEmail*, helper for sending notification emails via SMTP server (gmail tested)
 - *TelegramBot*, helper for sending notifications via Telegram, receive messages, send messages
+
+
+## Development
+
+Install pre-commit hooks defined by `.pre-commit-config.yaml`
+
+```shell
+pip3 install -U pre-commit
+pre-commit install
+```
+
+Auto fix
+```shell
+pre-commit run --all-files
+```
+
+Plugin version update
+```shell
+pre-commit autoupdate
+```

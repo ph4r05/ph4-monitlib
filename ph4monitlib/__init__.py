@@ -9,11 +9,20 @@ from ph4runner import AsyncRunner
 logger = logging.getLogger(__name__)
 
 
-def try_fnc(fnc):
+def try_fnc(fnc, default=None):
     try:
         return fnc()
-    except:
-        pass
+    except Exception:
+        return default
+
+
+def coalesce(*values):
+    return next((v for v in values if v is not None), None)
+
+
+def call_not_none(func, param):
+    if param is not None:
+        func(param)
 
 
 def jsonpath(path, obj, allow_none=False):
@@ -45,4 +54,3 @@ def get_runner(cli, args=None, cwd=None, shell=False, env=None):
     async_runner.log_out_during = False
     async_runner.preexec_setgrp = True
     return async_runner
-

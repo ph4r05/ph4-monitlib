@@ -29,7 +29,7 @@ class NotifyEmail:
         context = ssl.create_default_context()
 
         try:
-            logger.info(f'Sending email notification via {self.user}, msg: {txt_message[:80]}...')
+            logger.info(f"Sending email notification via {self.user}, msg: {txt_message[:80]}...")
             server = smtplib.SMTP(self.server, self.port, timeout=self.timeout)
             server.ehlo()
             server.starttls(context=context)
@@ -47,8 +47,8 @@ class NotifyEmail:
             return True
 
         except Exception as e:
-            logger.warning(f'Exception when sending email {e}', exc_info=e)
+            logger.warning(f"Exception when sending email {e}", exc_info=e)
             return e
 
         finally:
-            try_fnc(lambda: server.quit())
+            try_fnc(lambda: server.quit())  # type: ignore[union-attr]

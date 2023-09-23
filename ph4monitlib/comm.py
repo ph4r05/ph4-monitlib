@@ -42,15 +42,15 @@ class FiFoComm:
             if os.path.exists(self.fifo_path):
                 os.unlink(self.fifo_path)
         except Exception as e:
-            logger.warning(f'Error unlinking fifo {e}', exc_info=e)
+            logger.warning(f"Error unlinking fifo {e}", exc_info=e)
 
     def start(self):
         self.start_finished = False
         if not self.handler:
-            logger.warning(f'FiFo comm has no handler set')
+            logger.warning("FiFo comm has no handler set")
 
         def fifo_internal():
-            logger.info('Starting fifo thread')
+            logger.info("Starting fifo thread")
             try:
                 self.destroy_fifo()
                 self.create_fifo()
@@ -58,7 +58,7 @@ class FiFoComm:
                     pass
 
             except Exception as e:
-                logger.error(f'Error starting server fifo: {e}', exc_info=e)
+                logger.error(f"Error starting server fifo: {e}", exc_info=e)
                 self.start_error = e
                 return
             finally:
@@ -75,12 +75,12 @@ class FiFoComm:
                         if self.handler:
                             self.handler(data)
                         else:
-                            logger.warning(f'FiFo comm has no handler set')
+                            logger.warning("FiFo comm has no handler set")
 
                     except Exception as e:
-                        logger.error(f'Fifo thread exception: {e}', exc_info=e)
+                        logger.error(f"Fifo thread exception: {e}", exc_info=e)
                         time.sleep(0.1)
-            logger.info('Stopping fifo thread')
+            logger.info("Stopping fifo thread")
 
         self.fifo_thread = threading.Thread(target=fifo_internal, args=())
         self.fifo_thread.daemon = False
@@ -91,7 +91,7 @@ class FiFoComm:
             if self.start_error:
                 raise self.start_error
             if time.time() - ttime > 30.0:
-                raise ValueError('Init error: timeout')
+                raise ValueError("Init error: timeout")
             time.sleep(0.01)
 
     def stop(self):
@@ -100,13 +100,13 @@ class FiFoComm:
 
     def send_message(self, payload):
         """Send message to the fifo, as a client"""
-        with open(self.fifo_path, 'w') as f:
-            f.write(payload + '\n')
+        with open(self.fifo_path, "w") as f:
+            f.write(payload + "\n")
             f.flush()
 
 
 class TcpComm:
-    def __init__(self, host='127.0.0.1', port=9333, handler=None, running_fnc=None):
+    def __init__(self, host="127.0.0.1", port=9333, handler=None, running_fnc=None):
         self.is_running = True
         self.is_running_fnc = running_fnc
 
@@ -126,7 +126,7 @@ class TcpComm:
 
     def start(self):
         if not self.handler:
-            logger.warning(f'TcpComm has no handler set')
+            logger.warning("TcpComm has no handler set")
 
         sself = self
         self.start_finished = False
@@ -139,14 +139,14 @@ class TcpComm:
                         r = sself.handler(data.decode())
                         self.request.sendall(r)
                     else:
-                        logger.warning(f'TcpComm has no handler set')
+                        logger.warning("TcpComm has no handler set")
 
                 except Exception as e:
-                    logger.warning(f'Exception processing server message {e}', exc_info=e)
-                    self.request.sendall(json.dumps({'response': 500}).encode())
+                    logger.warning(f"Exception processing server message {e}", exc_info=e)
+                    self.request.sendall(json.dumps({"response": 500}).encode())
 
         def server_internal():
-            logger.info('Starting server thread')
+            logger.info("Starting server thread")
             try:
                 self.server_tcp = socketserver.TCPServer((self.server_host, self.server_port), TcpServerHandler)
                 self.server_tcp.allow_reuse_address = True
@@ -155,9 +155,9 @@ class TcpComm:
                 self.server_tcp.serve_forever()
             except Exception as e:
                 self.start_error = e
-                logger.error(f'Error in starting server thread {e}', exc_info=e)
+                logger.error(f"Error in starting server thread {e}", exc_info=e)
             finally:
-                logger.info('Stopping server thread')
+                logger.info("Stopping server thread")
 
         self.server_thread = threading.Thread(target=server_internal, args=())
         self.server_thread.daemon = False
@@ -169,7 +169,7 @@ class TcpComm:
             if self.start_error:
                 raise self.start_error
             if time.time() - ttime > 30.0:
-                raise ValueError('Init error: timeout')
+                raise ValueError("Init error: timeout")
             time.sleep(0.01)
 
     def stop(self):
@@ -178,14 +178,14 @@ class TcpComm:
         try:
             self.server_tcp.shutdown()
         except Exception as e:
-            logger.error(f'Error in TCP server shutdown {e}', exc_info=e)
+            logger.error(f"Error in TCP server shutdown {e}", exc_info=e)
 
     def send_message(self, payload):
         """Send a message to the TCP server, as a client"""
         tcp_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             tcp_client.connect((self.server_host, self.server_port))
-            tcp_client.sendall((payload + '\n').encode())
+            tcp_client.sendall((payload + "\n").encode())
 
             # Read data from the TCP server and close the connection
             received = tcp_client.recv(8192).decode()

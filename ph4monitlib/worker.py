@@ -9,7 +9,6 @@ import time
 from queue import Queue
 from typing import Optional
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -55,6 +54,7 @@ class AsyncWorker:
 
     def enqueue_on_main(self, task, loop=None):
         """Enqueues coroutine function for execution using given loop for enqueueing (should be mainloop)"""
+
         async def _enqueue(x):
             self.enqueue(x)
 
@@ -81,7 +81,7 @@ class Worker:
         self.is_running = True
 
         def worker_internal():
-            logger.info(f'Starting worker thread')
+            logger.info("Starting worker thread")
             while self._check_is_running():
                 try:
                     next_task = self.worker_queue.get(True, queue_timeout)
@@ -91,10 +91,10 @@ class Worker:
                     try:
                         next_task()
                     except Exception as e:
-                        logger.error(f'Top-level error at worker thread {e}', exc_info=e)
+                        logger.error(f"Top-level error at worker thread {e}", exc_info=e)
                 except queue.Empty:
                     time.sleep(0.02)
-            logger.info(f'Stopping worker thread')
+            logger.info("Stopping worker thread")
 
         self.worker_thread = threading.Thread(target=worker_internal, args=())
         self.worker_thread.daemon = False
@@ -107,4 +107,3 @@ class Worker:
     def stop(self):
         self.enqueue(None)
         self.is_running = False
-
