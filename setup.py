@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-version = "0.0.5"
+version = "0.0.6"
 
 # Please update tox.ini when modifying dependency version requirements
 install_requires = [
@@ -9,10 +9,11 @@ install_requires = [
     "future",
     "shellescape",
     "asyncio",
-    "ph4-runner",
+    "ph4-runner>=0.0.5",
     "jsonpath_ng",
     "python-telegram-bot",
     "psutil",
+    "pyyaml>=6.0.1",
 ]
 
 dev_extras = [
@@ -26,6 +27,7 @@ test_extras = [
     "mypy",
     "pre-commit",
     "pytest",
+    "types-PyYAML",
 ]
 
 docs_extras = [

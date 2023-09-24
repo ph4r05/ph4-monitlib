@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import Optional
 
 from jsonpath_ng import parse
 from ph4runner import AsyncRunner
@@ -23,6 +24,12 @@ def coalesce(*values):
 def call_not_none(func, param):
     if param is not None:
         func(param)
+
+
+def has_yaml_ext(fname: Optional[str]) -> bool:
+    if fname is None:
+        return False
+    return fname.endswith(".yaml") or fname.endswith(".yml")
 
 
 def jsonpath(path, obj, allow_none=False):
