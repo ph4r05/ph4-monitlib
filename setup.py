@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-version = "0.0.6"
+version = "0.1.0"
 
 # Please update tox.ini when modifying dependency version requirements
 install_requires = [
@@ -61,13 +61,10 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
     packages=find_packages(),
     include_package_data=True,
